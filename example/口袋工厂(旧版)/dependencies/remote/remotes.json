@@ -1,0 +1,4 @@
+{
+"custom_maven_repos":["https://jitpack.io"],
+"remotes":["com.google.code.gson:gson:2.8.6","com.squareup.retrofit2:retrofit:2.9.0","com.qq.e.union:union:4.294.1164"]
+}

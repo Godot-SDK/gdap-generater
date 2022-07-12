@@ -1,0 +1,9 @@
+[config]
+name="StrFromTest"
+binary_type="local"
+binary="PocketPlugin.aar"
+
+[dependencies]
+custom_maven_repos=["https://jitpack.io"]
+local=["le_base_2_1_3.aar","le_ad_2_1_3.aar","miit_mdid_1.0.10.aar","open_ad_sdk.aar"]
+remote=["com.google.code.gson:gson:2.8.6","com.squareup.retrofit2:retrofit:2.9.0","com.qq.e.union:union:4.294.1164"]
