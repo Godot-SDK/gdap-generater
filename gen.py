@@ -6,16 +6,20 @@ import sys
 
 localDependencies = []
 remoteDependencies = []
+pluginDir = "/plugin"
+localDepDir = "/dependencies/local"
+remoteDepDir = "/dependencies/remote"
+outPutDir = "/output"
 def makeOutPutDir():
     os.mkdir(output)
     pass
 
 #把aar插件本地复制过去
-def copyLocalPlugin():
-    workdir = "example/口袋工厂(旧版)/plugin"
-    targetdir = "example/口袋工厂(旧版)/output"
+def copyLocalPlugin(path):
+    workdir = path + pluginDir
+    targetdir = path + outPutDir
     files = os.listdir(workdir)
-    #这里需要重构
+
     for file in files:
         if file.endswith(".aar") or file.endswith(".jar"):
             srcFile = os.path.join(workdir,file)
@@ -25,9 +29,9 @@ def copyLocalPlugin():
     pass
 
 #把aar插件的本地依赖复制过去
-def copyLocalDep():
-    workdir = "example/口袋工厂(旧版)/dependencies/local"
-    targetdir = "example/口袋工厂(旧版)/output"
+def copyLocalDep(path):
+    workdir = path + localDepDir
+    targetdir = path + outPutDir
     files = os.listdir(workdir)
 
     for file in files:
@@ -40,18 +44,19 @@ def copyLocalDep():
     print("任务：copyLocalDep：复制本地依赖aar完成")
     pass
 
-def genGdap():
+def genGdap(path):
     #gdap[config行]
     config_name = ""
     binary_type = "local"
     binary = "PocketPlugin.aar"
     def readPluginConfig():
-        with open("example/口袋工厂(旧版)/plugin/config.json") as f:
+        with open(path + pluginDir + "/config.json") as f:
             data = json.load(f)
             #print(data)
             return data['name']
+
     def readRemoteDependencies():
-        targetdir = "example/口袋工厂(旧版)/dependencies/remote/remotes.json"
+        targetdir = path + remoteDepDir + "/remotes.json"
         file = open(targetdir,encoding="utf-8")
         data = json.load(file)
         deps = data["remotes"]
@@ -60,7 +65,7 @@ def genGdap():
         pass
 
     def writePluginConfig():
-        targetdir = "example/口袋工厂(旧版)/output/test.gdap"
+        targetdir = path + outPutDir + "/test.gdap"
         file = open(targetdir,"a+",encoding="utf-8")
         file.write("[config]\n")
         file.write("name="+ '"' + config_name +'"' + "\n")
@@ -70,7 +75,7 @@ def genGdap():
         file.close()
 
     def writeLocalDependencies():
-        targetdir = "example/口袋工厂(旧版)/output/test.gdap"
+        targetdir = path + outPutDir + "/test.gdap"
         file = open(targetdir,"a+",encoding="utf-8")
         file.write("[dependencies]\n")
         file.write('custom_maven_repos=["https://jitpack.io"]\n')
@@ -89,7 +94,7 @@ def genGdap():
         file.close()
 
     def writeRemoteDependencies():
-        targetdir = "example/口袋工厂(旧版)/output/test.gdap"
+        targetdir = path + outPutDir + "/test.gdap"
         file = open(targetdir,"a+",encoding="utf-8")
         remoteLine = "remote=["
         for f in remoteDependencies:
@@ -124,15 +129,17 @@ def rmtreeError(function, path, excinfo):
 #main
 #print(sys.argv)
 #print(len(sys.argv))
-if len(sys.argv) == 1:
-    output = "example/口袋工厂(旧版)/output"
-    if not os.path.exists(output):
-        makeOutPutDir()
-    else:
-        os.remove(output+"/test.gdap")
-    copyLocalPlugin()
-    copyLocalDep()
-    genGdap()
+
 if len(sys.argv) == 2:
     if sys.argv[1] == "clean":
         clean()
+    else:
+        sys_path = sys.argv[1]
+        output = sys.argv[1] + "/output"
+        if not os.path.exists(output):
+            makeOutPutDir()
+        else:
+            os.remove(output+"/test.gdap")
+        copyLocalPlugin(sys_path)
+        copyLocalDep(sys_path)
+        genGdap(sys_path)
