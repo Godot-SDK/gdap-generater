@@ -10,12 +10,14 @@ pluginDir = "/plugin"
 localDepDir = "/dependencies/local"
 remoteDepDir = "/dependencies/remote"
 outPutDir = "/output"
+#主插件文件的名字
+binary = ""
 
 def makeOutPutDir():
     os.mkdir(output)
     pass
 
-#把aar插件本地复制过去
+#把aar插件本体复制过去
 def copyLocalPlugin(path):
     workdir = path + pluginDir
     targetdir = path + outPutDir
@@ -23,6 +25,8 @@ def copyLocalPlugin(path):
 
     for file in files:
         if file.endswith(".aar") or file.endswith(".jar"):
+            global binary
+            binary = file
             srcFile = os.path.join(workdir,file)
             targetFile = os.path.join(targetdir,file)
             shutil.copyfile(srcFile,targetFile)
@@ -49,7 +53,6 @@ def genGdap(path):
     #gdap[config行]
     config_name = ""
     binary_type = "local"
-    binary = "PocketPlugin.aar"
     custom_maven_repos = []
     def readPluginConfig():
         with open(path + pluginDir + "/config.json") as f:
