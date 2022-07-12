@@ -10,6 +10,7 @@ pluginDir = "/plugin"
 localDepDir = "/dependencies/local"
 remoteDepDir = "/dependencies/remote"
 outPutDir = "/output"
+
 def makeOutPutDir():
     os.mkdir(output)
     pass
@@ -49,11 +50,21 @@ def genGdap(path):
     config_name = ""
     binary_type = "local"
     binary = "PocketPlugin.aar"
+    custom_maven_repos = []
     def readPluginConfig():
         with open(path + pluginDir + "/config.json") as f:
             data = json.load(f)
             #print(data)
             return data['name']
+
+    def readCustomMavenRepos():
+        targetdir = path + remoteDepDir + "/remotes.json"
+        file = open(targetdir,encoding="utf-8")
+        data = json.load(file)
+        file.close()
+        #print("custom maven ",data)
+        mavens = data["custom_maven_repos"]
+        return mavens
 
     def readRemoteDependencies():
         targetdir = path + remoteDepDir + "/remotes.json"
@@ -78,7 +89,19 @@ def genGdap(path):
         targetdir = path + outPutDir + "/test.gdap"
         file = open(targetdir,"a+",encoding="utf-8")
         file.write("[dependencies]\n")
-        file.write('custom_maven_repos=["https://jitpack.io"]\n')
+        #开始写自定义maven仓库数组
+        if len(custom_maven_repos) != 0:
+            #print(custom_maven_repos)
+            maven = "custom_maven_repos=["
+            for item in custom_maven_repos:
+                maven += '"'
+                maven += item
+                maven += '"'
+                maven += ","
+            maven_result = maven.rstrip(",")
+            maven_result += "]\n"
+            file.write(maven_result)
+        #开始写本地依赖数组
         localLine = "local=["
         for f in localDependencies:
             #print("找到本地依赖：",f)
@@ -87,7 +110,6 @@ def genGdap(path):
             localLine += '"'
             localLine += ","
             #print(localLine)
-        #清除末尾的，
         result = localLine.rstrip(",")
         result += "]\n"
         file.write(result)
@@ -108,6 +130,7 @@ def genGdap(path):
         file.close()
 
     config_name = readPluginConfig()
+    custom_maven_repos = readCustomMavenRepos()
     remoteDependencies = readRemoteDependencies()
     writePluginConfig()
     writeLocalDependencies()
