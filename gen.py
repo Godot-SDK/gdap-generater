@@ -131,6 +131,7 @@ def rmtreeError(function, path, excinfo):
 #print(len(sys.argv))
 
 if len(sys.argv) == 2:
+    #这个我就不修复了，暂时有问题，勿用！请手动删除output文件夹！
     if sys.argv[1] == "clean":
         clean()
     else:
