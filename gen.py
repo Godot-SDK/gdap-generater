@@ -86,13 +86,11 @@ def genGdap():
         result = localLine.rstrip(",")
         result += "]\n"
         file.write(result)
-        file.write("\n")
         file.close()
 
     def writeRemoteDependencies():
         targetdir = "example/口袋工厂(旧版)/output/test.gdap"
         file = open(targetdir,"a+",encoding="utf-8")
-        file.write('custom_maven_repos:["https://jitpack.io"]\n')
         remoteLine = "remote=["
         for f in remoteDependencies:
             remoteLine += '"'
